@@ -1,0 +1,27 @@
+runMode: debug
+addr: :9002
+jwt:
+  sign: hdfhdsiwurq12
+  issue: sai
+  ttl: 600
+  name: jwt_token
+db:
+  name: im
+  host: 127.0.0.1:3306
+  username: root
+  password: 111111
+  charset: utf8mb4
+  log: 0
+redis:
+  host: 127.0.0.1
+  port: 6379
+  auth: 
+  db: 5
+  MaxActive: 32
+  MaxIdle: 8
+  IdleTimeout: 5
+log:
+  level: debug
+  file_format: "%Y%m%d"
+  max_save_days: 30
+  file_type: one #one, level

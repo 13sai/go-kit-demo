@@ -6,5 +6,14 @@ type Add struct {
 }
 
 type AddAck struct {
-	Res int `json"res"`
+	Res int `json:"res"`
+}
+
+type Login struct {
+	Name string `json:"name"`
+	Pass string `json:"password"`
+}
+
+type LoginAck struct {
+	Token string `json:token`
 }

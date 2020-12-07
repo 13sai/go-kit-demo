@@ -10,14 +10,23 @@ import (
 
 type EndPointServer struct {
 	AddEndPoint endpoint.Endpoint
+	LoginEndPoint endpoint.Endpoint
 }
 
 func NewEndPointServer(s service.Service) EndPointServer {
 	var addEndPoint endpoint.Endpoint
+	{
+		addEndPoint = MakeAddEndPoint(s)
+		addEndPoint = AuthMiddleware()(addEndPoint)
+	}
 
-	addEndPoint = MakeAddEndPoint(s)
+	var loginEndPoint endpoint.Endpoint
+	{
+		loginEndPoint = MakeLoginEndPoint(s)
+		// loginEndPoint = AuthMiddleware()(loginEndPoint)
+	}
 
-	return EndPointServer{addEndPoint}
+	return EndPointServer{addEndPoint, loginEndPoint}
 }
 
 func (s EndPointServer) Add(ctx context.Context, in service.Add) service.AddAck {
@@ -28,7 +37,15 @@ func (s EndPointServer) Add(ctx context.Context, in service.Add) service.AddAck 
 func MakeAddEndPoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (res interface{}, err error) {
 		req := request.(service.Add)
-		res = s.TestAdd(ctx, req)
+		res = s.Add(ctx, req)
+		return
+	}
+}
+
+func MakeLoginEndPoint(s service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (res interface{}, err error) {
+		req := request.(service.Login)
+		res, _ = s.Login(ctx, req)
 		return
 	}
 }
