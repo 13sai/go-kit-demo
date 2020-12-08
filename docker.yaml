@@ -7,16 +7,16 @@ jwt:
   name: jwt_token
 db:
   name: user
-  host: 127.0.0.1:3306
+  host: 172.17.0.1:3316
   username: root
   password: 111111
   charset: utf8mb4
   log: 0
 redis:
-  host: 127.0.0.1
-  port: 6379
+  host: 172.17.0.1
+  port: 6389
   auth: 
-  db: 5
+  db: 0
   MaxActive: 32
   MaxIdle: 8
   IdleTimeout: 5
