@@ -7,7 +7,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"local.com/13sai/go-kit-demo/model"
+	"go-kit-demo/model"
 )
 
 var (

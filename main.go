@@ -1,58 +1,70 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
-	"net/http"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
-	"context"
 
-	"github.com/spf13/viper"
-	"github.com/spf13/pflag"
+	"github.com/google/uuid"
 
-	"local.com/13sai/go-kit-demo/service"
-	"local.com/13sai/go-kit-demo/endpoint"
-	"local.com/13sai/go-kit-demo/transport"
-	"local.com/13sai/go-kit-demo/config"
-	"local.com/13sai/go-kit-demo/model"
-)
-
-var (
-	conf = pflag.StringP("config", "c", "", "config filepath")
+	"go-kit-demo/discovery"
+	"go-kit-demo/endpoint"
+	"go-kit-demo/service"
+	"go-kit-demo/transport"
 )
 
 func main() {
-	pflag.Parse()
+	consulAddr := flag.String("consul.addr", "localhost", "consul address")
+	consulPort := flag.Int("consul.port", 8500, "consul port")
+	serviceName := flag.String("service.name", "register", "service name")
+	serviceAddr := flag.String("service.addr", "localhost", "service addr")
+	servicePort := flag.Int("service.port", 12312, "service port")
 
-	// 初始化配置
-	if err := config.Init(*conf); err != nil {
-		panic(err)
-	}
-	model.GetDB()
-	model.InitRedis()
+	flag.Parse()
+
+	// consul客户端
+	client := discovery.NewDiscoveryClient(*consulAddr, *consulPort)
+
+	// model.GetDB()
+	// model.InitRedis()
 
 	ctx := context.Background()
 	errChan := make(chan error)
 
-	userService := service.MakeUserServiceImpl(&model.UserDAOImpl{})
+	srv := service.NewRegisterServiceImpl(client)
 
-	userEndpoints := &endpoint.UserEndpoints{ 
-		endpoint.MakeRegisterEndpoint(userService), 
-		endpoint.MakeLoginEndPoint(userService), 
-	} 
-	r := transport.NewHttpHandle(ctx, userEndpoints) 
+	endpoints := endpoint.RegisterEndpoints{
+		DiscoveryEndpoint:   endpoint.MakeDiscoveryEndpoint(srv),
+		HealthCheckEndpoint: endpoint.MakeHealthCheckEndpoint(srv),
+	}
+	r := transport.NewHttpHandle(ctx, &endpoints)
+
 	go func() {
-		fmt.Println("server on " + viper.GetString("addr"))
-		errChan <- http.ListenAndServe(viper.GetString("addr"), r) 
-	}() 
-	go func() { 
-		// 监控系统信号，等待 ctrl + c 系统信号通知服务关闭 
-		c := make(chan os.Signal, 1) 
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM) 
-		errChan <- fmt.Errorf("%s", <-c) 
-	}() 
-	error := <-errChan 
-	log.Println(error) 
+		errChan <- http.ListenAndServe(":"+strconv.Itoa(*servicePort), r)
+	}()
+	go func() {
+		// 监控系统信号，等待 ctrl + c 系统信号通知服务关闭
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errChan <- fmt.Errorf("%s", <-c)
+	}()
+
+	instanceId := *serviceName + "-" + uuid.New().String()
+	err := client.Register(ctx, *serviceName, instanceId, "/health", *serviceAddr, *servicePort, nil, nil)
+	if err != nil {
+		log.Printf("register service error: %s", err)
+		os.Exit(-1)
+	}
+
+	err = <-errChan
+	fmt.Println("over!!!!")
+	fmt.Println(err)
+
+	client.Deregister(ctx, instanceId)
 }

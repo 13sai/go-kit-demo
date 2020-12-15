@@ -1,16 +1,17 @@
 package transport
 
 import (
-	"net/http"
 	"context"
-	"fmt"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
 
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 
-
-	localEndpoint "local.com/13sai/go-kit-demo/endpoint"
+	"go-kit-demo/endpoint"
+	localEndpoint "go-kit-demo/endpoint"
 )
 
 type errorWrapper struct {
@@ -47,25 +48,40 @@ func errorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(errorWrapper{Error: err.Error()})
 }
 
-func NewHttpHandle(ctx context.Context, end *localEndpoint.UserEndpoints) http.Handler {
+func NewHttpHandle(ctx context.Context, end *localEndpoint.RegisterEndpoints) http.Handler {
 	ops := []kithttp.ServerOption{
 		kithttp.ServerErrorEncoder(errorEncoder),
 	}
 
 	m := mux.NewRouter()
-	m.Methods("POST").Path("/register").Handler(kithttp.NewServer(
-		end.RegisterEndpoint,
+
+	m.Methods("GET").Path("/health").Handler(kithttp.NewServer(
+		end.HealthCheckEndpoint,
 		decodeRegisterRequest,
 		encodeHTTPResponse,
 		ops...,
 	))
-	m.Methods("POST").Path("/login").Handler(kithttp.NewServer(
-		end.LoginEndPoint,
-		decodeLoginRequest,
+
+	m.Methods("GET").Path("/discovery/name").Handler(kithttp.NewServer(
+		end.DiscoveryEndpoint,
+		decodeDiscoveryRequest,
 		encodeHTTPResponse,
 		ops...,
 	))
-
-
 	return m
+}
+
+func decodeDiscoveryRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	serviceName := r.URL.Query().Get("serviceName")
+
+	if serviceName == "" {
+		return nil, errors.New("invalid request parameter")
+	}
+	return endpoint.DiscoveryRequest{
+		ServiceName: serviceName,
+	}, nil
+}
+
+func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	return endpoint.HealthRequest{}, nil
 }

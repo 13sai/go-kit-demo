@@ -2,18 +2,18 @@ package endpoint
 
 import (
 	"context"
-	"fmt"
 	"errors"
+	"fmt"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/spf13/viper"
 
-	"local.com/13sai/go-kit-demo/util"
+	"go-kit-demo/util"
 )
 
 func AuthMiddleware() endpoint.Middleware {
-	return func(next endpoint.Endpoint) endpoint.Endpoint{
-		return func (ctx context.Context, request interface{})  (res interface{}, err error){
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (res interface{}, err error) {
 			token := fmt.Sprint(ctx.Value(viper.GetString("jwt.name")))
 			if token == "" {
 				err = errors.New("please login")
