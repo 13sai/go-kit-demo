@@ -1,5 +1,9 @@
 package transport
 
+/**
+转发请求转发给endpoint，并将处理结果输出
+类似控制器
+*/
 import (
 	"context"
 	"encoding/json"

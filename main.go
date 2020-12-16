@@ -31,9 +31,6 @@ func main() {
 	// consul客户端
 	client := discovery.NewDiscoveryClient(*consulAddr, *consulPort)
 
-	// model.GetDB()
-	// model.InitRedis()
-
 	ctx := context.Background()
 	errChan := make(chan error)
 
@@ -48,8 +45,9 @@ func main() {
 	go func() {
 		errChan <- http.ListenAndServe(":"+strconv.Itoa(*servicePort), r)
 	}()
+
+	// 监控系统信号，等待 ctrl + c 系统信号通知服务关闭
 	go func() {
-		// 监控系统信号，等待 ctrl + c 系统信号通知服务关闭
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errChan <- fmt.Errorf("%s", <-c)

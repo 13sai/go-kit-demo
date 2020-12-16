@@ -1,5 +1,13 @@
 package endpoint
 
+/**
+ 抽象层
+
+ 两个路由：
+- health 健康检查
+- Discovery 服务发现
+*/
+
 import (
 	"context"
 

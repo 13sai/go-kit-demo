@@ -1,5 +1,10 @@
 package service
 
+/**
+service，业务逻辑层
+
+提供两个接口，健康检查和服务发现
+*/
 import (
 	"context"
 	"errors"
@@ -9,9 +14,9 @@ import (
 )
 
 type DiscoveryService interface {
-	// 登录接口
+	// 健康检查接口
 	HealthCheck() string
-	// 注册接口
+	// 服务发现接口
 	DiscoveryService(ctx context.Context, serviceName string) ([]*discovery.InstanceInfo, error)
 }
 

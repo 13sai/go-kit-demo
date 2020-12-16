@@ -1,5 +1,10 @@
 package discovery
 
+/**
+  consul客户端
+  字段较为复杂，但逻辑简单，提供3个方法，注册、注销、发现，都是通过http请求（consul）
+*/
+
 import (
 	"bytes"
 	"context"
@@ -138,6 +143,7 @@ func (consulClient *DiscoveryClient) Deregister(ctx context.Context, instanceId 
 	return nil
 }
 
+// discover service
 func (consulClient *DiscoveryClient) DiscoverServices(ctx context.Context, serviceName string) ([]*InstanceInfo, error) {
 	req, err := http.NewRequest("GET",
 		"http://"+consulClient.host+":"+strconv.Itoa(consulClient.port)+"/v1/health/service/"+serviceName, nil)
