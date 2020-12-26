@@ -1,0 +1,12 @@
+runMode: debug
+addr: :9002
+jwt:
+  sign: hdfhdsiwurq12
+  issue: sai
+  ttl: 600
+  name: jwt_token
+log:
+  level: debug
+  file_format: "%Y%m%d"
+  max_save_days: 30
+  file_type: one #one, level
