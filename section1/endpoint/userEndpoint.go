@@ -11,12 +11,12 @@ import (
 
 type UserEndpoints struct {
 	RegisterEndpoint endpoint.Endpoint
-	LoginEndPoint endpoint.Endpoint
+	LoginEndPoint    endpoint.Endpoint
 }
 
 type LoginRequest struct {
-	Email string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
 }
 
 type LoginResponse struct {
@@ -28,14 +28,14 @@ func MakeLoginEndPoint(s service.UserService) endpoint.Endpoint {
 		req := request.(*LoginRequest)
 		fmt.Println(req)
 		userInfo, err := s.Login(ctx, req.Email, req.Password)
-		return &LoginResponse{UserInfo:userInfo}, err
+		return &LoginResponse{UserInfo: userInfo}, err
 	}
 }
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Email string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" form:"username"`
+	Email    string `json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
 }
 
 type RegisterResponse struct {
@@ -46,11 +46,11 @@ func MakeRegisterEndpoint(userService service.UserService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(RegisterRequest)
 		userInfo, err := userService.Register(ctx, &service.RegisterUserVO{
-			Username:req.Username,
-			Password:req.Password,
-			Email:req.Email,
+			Username: req.Username,
+			Password: req.Password,
+			Email:    req.Email,
 		})
-		return &RegisterResponse{UserInfo:userInfo}, err
+		return &RegisterResponse{UserInfo: userInfo}, err
 
 	}
 }

@@ -30,6 +30,8 @@ func main() {
 	if err := config.Init(*conf); err != nil {
 		panic(err)
 	}
+	model.GetDB()
+	model.InitRedis()
 
 	ctx := context.Background()
 	errChan := make(chan error)

@@ -1,5 +1,5 @@
 runMode: debug
-addr: :9002
+addr: :9012
 jwt:
   sign: hdfhdsiwurq12
   issue: sai
@@ -7,14 +7,14 @@ jwt:
   name: jwt_token
 db:
   name: user
-  host: 127.0.0.1:3306
+  host: 127.0.0.1:3316
   username: root
   password: 111111
   charset: utf8mb4
   log: 0
 redis:
   host: 127.0.0.1
-  port: 6379
+  port: 6389
   auth: 
   db: 5
   MaxActive: 32
