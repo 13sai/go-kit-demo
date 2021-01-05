@@ -8,6 +8,6 @@ go-kit目录介绍：
 
 ---
 
-- [整合grpc到go-kit](https://github.com/13sai/go-kit-demo/tree/master/section1)
+- [go-kit会员注册登录与docker部署](https://github.com/13sai/go-kit-demo/tree/master/section1)
 - [服务发现与注册](https://github.com/13sai/go-kit-demo/tree/master/section2)
 - [整合grpc到go-kit](https://github.com/13sai/go-kit-demo/tree/master/section3)
