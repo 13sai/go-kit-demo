@@ -31,7 +31,7 @@ func clientTest() {
 
 	defer conn.Close()
 	client := pb.NewUserServiceClient(conn)
-	userReq := &pb.LoginRequest{Username: "sai", Password: "11111111"}
+	userReq := &pb.LoginRequest{Username: "sai", Password: "111111"}
 
 	reply, err := client.CheckPassword(context.Background(), userReq)
 	if err != nil {

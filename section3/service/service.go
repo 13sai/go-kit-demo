@@ -18,5 +18,5 @@ func (s UserServiceImpl) CheckPassword(ctx context.Context, username string, pas
 		return true, nil
 	}
 
-	return false, errors.New("deny u")
+	return false, errors.New("deny")
 }

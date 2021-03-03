@@ -1,23 +1,37 @@
 
 ```
+自定义network
+
 docker network create kong-net
+
+启动
 
 docker-compose up
 
-kong启动应该失败的，需要初始化
+kong启动应该会exit的，因为KONG_DATABASE需要初始化
 
-
+迁移
 docker run --rm --network=kong-net -e "KONG_DATABASE=postgres" -e "KONG_PG_HOST=kong-database" -e "KONG_PG_PASSWORD=123456" kong:latest kong migrations bootstrap
 
-docker logs查看kong失败日志，按照日志执行
+docker ps -a
 
+查看kong依旧exit了
+
+docker logs 查看kong的失败日志，按照日志执行
+比如：
 2021/01/09 12:40:53 [error] 1#0: init_by_lua error: /usr/local/share/lua/5.1/kong/cmd/utils/migrations.lua:20: New migrations available; run 'kong migrations up' to proceed
 
-那么执行洗 kong migrations up
+那么执行一下 kong migrations up
 
 docker run --rm --network=kong-net -e "KONG_DATABASE=postgres" -e "KONG_PG_HOST=kong-database" -e "KONG_PG_PASSWORD=123456" kong:latest kong migrations up
 
+
+docker ps -a
+可以看到kong也成功运行起来了
+
 ```
+
+遇到的问题汇总：
 
 ```
 add router 错误
@@ -25,8 +39,7 @@ konga.  3 schema violations (headers: unknown field; https_redirect_status_code:
 
 
 升级kong到2.x
-
-````
+```
 
 ```
 curl -i -X POST --url http://localhost:8001/services/ --data 'name=demo1' --data 'url=http://github.13sai.com/'
