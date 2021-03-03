@@ -1,3 +1,35 @@
+限流demo：
+
+运行
+> go run rate.go
+
+然后命令行多执行几次：
+> curl localhost:8080/
+
+
+熔断器demo:
+```go
+go run hystrixServer.go
+go run hystrixClient.go
+```
+
+执行
+> curl localhost:8081
+
+查看效果。
+
+配置自行调整：
+```go
+hystrix.CommandConfig{
+    Timeout:                5000, //执行command的超时时间(毫秒)
+    MaxConcurrentRequests:  8,    //command的最大并发量
+    SleepWindow:            1000, //过多长时间，熔断器再次检测是否开启。单位毫秒
+    ErrorPercentThreshold:  30,   //错误率 请求数量大于等于RequestVolumeThreshold并且错误率到达这个百分比后就会启动
+    RequestVolumeThreshold: 5,    //请求阈值(一个统计窗口10秒内请求数量)  熔断器是否打开首先要满足这个条件；这里的设置表示至少有5个请求才进行ErrorPercentThreshold错误百分比计算
+}
+```
+
+
 
 # 高可用设计
 

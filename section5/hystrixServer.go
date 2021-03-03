@@ -38,7 +38,7 @@ func main() {
 // 默认http处理
 func defaultHttp(w http.ResponseWriter, r *http.Request) {
 	i := rand.Intn(1000)
-	fmt.Println(i)
+	fmt.Println("睡眠时间-", i)
 	time.Sleep(time.Duration(i) * time.Millisecond)
 	w.Write([]byte("index"))
 	return
